@@ -1,0 +1,175 @@
+                                                                     MUX BY ELSE IF
+                                                                  ____________________
+
+module mux4x1(in,sel,y);
+  output reg y;
+  input [3:0] in;
+  input [1:0] sel;
+  
+  always@(in,sel)
+    begin
+      if(sel==0)
+        begin
+        y <= in[0];
+        end
+      else if(sel==1)
+        begin
+          y <= in[1];
+        end
+      else if(sel==2)
+        begin
+          y <= in[2];
+        end
+      else
+          y <= in[3];
+    end
+endmodule
+
+
+									MUX BY CASES
+                                                                     ___________________
+
+module mux4x1(in,sel,y);
+  output reg y;
+  input [3:0] in;
+  input [1:0] sel;
+  
+  always@(sel)
+      case(sel)
+        0:begin
+          y <= in[0];
+           end
+        1:begin
+          y <= in[1];
+           end
+        2:begin
+          y <= in[2];
+           end
+        3:begin
+          y <= in[3];
+           end
+        default:
+          begin
+            y <= 0;
+          end
+      endcase
+      
+endmodule
+
+
+
+
+                                           test bench
+module stimlus;
+  reg [3:0] in;
+  reg [1:0] sel;
+  wire y;
+  
+  mux4x1 DUT(in,sel,y);
+  
+   initial
+     begin
+       $dumpfile("dump.vcd");
+       $dumpvars(0);
+      
+       monitor;
+       
+       in=4'b1010;
+       sel=0;
+       #(2) sel=1;
+       #(2) sel=2;
+       #(2) sel=3;
+       
+       #(2) $finish;
+       
+     end
+  task monitor;
+    $monitor($time," i0=%b,i1=%b,i2=%b,i3=%b,sel=%b,y=%b",in[0],in[1],in[2],in[3],sel,y);
+  endtask
+endmodule
+
+
+
+                                                                        OUTPUT
+                                                                    _______________
+
+# KERNEL:                    0 i0=0,i1=1,i2=0,i3=1,sel=00,y=0
+# KERNEL:                    2 i0=0,i1=1,i2=0,i3=1,sel=01,y=1
+# KERNEL:                    4 i0=0,i1=1,i2=0,i3=1,sel=10,y=0
+# KERNEL:                    6 i0=0,i1=1,i2=0,i3=1,sel=11,y=1
+       
+__________________________________________________________________________________________________________________________________________________________________________
+
+
+3:: IN MY STYLE 16X1 MUX==
+
+
+  module mux16x1(y,i,a,b);
+  output reg y;
+  input [15:0] i;
+  input [1:0] a;
+  input [1:0] b;
+  wire [3:0] w;
+  
+  assign w[3:0]={a[1:0],b[1:0]};
+  
+  always@(*)
+    case(w)
+        4'b0000: y=i[0];
+        4'b0001: y=i[1];
+        4'b0010: y=i[2];
+        4'b0011: y=i[3];
+        4'b0100: y=i[4];
+        4'b0101: y=i[5];
+        4'b0110: y=i[6];
+        4'b0111: y=i[7];
+        4'b1000: y=i[8];
+        4'b1001: y=i[9];
+        4'b1010: y=i[10];
+        4'b1011: y=i[11];
+        4'b1100: y=i[12];
+        4'b1101: y=i[13];
+        4'b1110: y=i[14];
+        4'b1111: y=i[15];
+      endcase
+    
+endmodule
+
+
+
+									          TESTBENCH
+										+++++++++++++
+
+module stimulus;
+  reg [15:0] i;
+  reg [1:0] a;
+  reg [1:0] b;
+  
+  mux16x1 DUT(y,i,a,b);
+  
+  initial
+    begin
+      $dumpfile("dump.vcd");
+      $dumpvars(0);
+      
+      monitor;
+      
+      i = 16'b001x001x000x000x;  						// input as=[15,14,13,12.....1,0]
+      
+      a=0;
+      b=0;
+      
+    end
+  
+  task monitor;
+    $monitor($time," y=%b",y);
+  endtask
+  
+endmodule
+
+
+
+									    OUTPUT
+									   +++++++++
+
+# KERNEL:                    0 y=x
